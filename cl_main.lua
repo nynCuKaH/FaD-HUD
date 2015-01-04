@@ -5,16 +5,22 @@
 	To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/
 	
 ---------------------------------------------------------------------------*/
-
 /*--  HUD Settings --*/
 local HUD 	= {}
 
 -- Edit settings here.
 HUD.X = "left" 			-- left / center / right
-HUD.Y = "bottom"; 		-- bottom / center / top
+HUD.Y = "bottom"	-- bottom / center / top
 
 HUD.HealthColor = Color(192, 57, 43, 255)
 HUD.ArmorColor 	= Color(41, 128, 185, 255)
+
+HUD.Currency = "$"
+
+--[[Hungermode Settings]]--
+
+HUD.EnableHunger = false
+HUD.HungerColor = Color(200, 190, 70, 255)
 
 -- Don't edit anything below this line.
 HUD.Width 	= 400
@@ -96,18 +102,30 @@ HUD.BarWidth = HUD.Width - 90
 
 HUD.HHeight = HUD.Height / 2 + 11
 
-
-
---[[Values that have +1 or 2 positions are shaders of their respectives HUd elements]]--
+HUD.HH = 18
+HUD.HO = 5
 
 local function Base()
 	
-	-- Background
-	draw.RoundedBoxEx(4, HUD.PosX-1, HUD.BPosY - 1, HUD.Width + 28 + 2, HUD.BHeight + 2, Color(30,30,30,150), true, true, true, true)
-	draw.RoundedBoxEx(4, HUD.PosX, HUD.BPosY, HUD.Width + 28, HUD.BHeight, Color(50,50,50,150), true, true, true, true)
+	if !HUD.EnableHunger then
+		
+		-- Background
+		draw.RoundedBoxEx(4, HUD.PosX-1, HUD.BPosY - 1, HUD.Width + 28 + 2, HUD.BHeight + 2, Color(30,30,30,150), true, true, true, true)
+		draw.RoundedBoxEx(4, HUD.PosX, HUD.BPosY, HUD.Width + 28, HUD.BHeight, Color(50,50,50,150), true, true, true, true)
 
-	-- Foreground
-	draw.RoundedBoxEx(4, HUD.PosX, HUD.BPosY, HUD.Width + 28, HUD.BHeight, Color(70,70,70,1), true, true, true, true)
+		-- Sections
+		draw.RoundedBoxEx(4, HUD.PosX, HUD.BPosY, HUD.Width + 28, HUD.BHeight, Color(70,70,70,1), true, true, true, true)
+	
+	else -- Hunger Enabled
+		
+		-- Background
+		draw.RoundedBoxEx(4, HUD.PosX-1, HUD.BPosY - 1 - HUD.HO, HUD.Width + 28 + 2 - HUD.HH - 4, HUD.BHeight + 2 + HUD.HH + 2, Color(30,30,30,150), true, true, true, true)
+		draw.RoundedBoxEx(4, HUD.PosX, HUD.BPosY - HUD.HO, HUD.Width + 28 - HUD.HH - 4, HUD.BHeight + HUD.HH + 2, Color(50,50,50,150), true, true, true, true)
+
+		-- Sections
+		draw.RoundedBoxEx(4, HUD.PosX, HUD.BPosY - HUD.HO, HUD.Width + 28 - HUD.HH - 4, HUD.BHeight + HUD.HH, Color(70,70,70,1), true, true, true, true)	
+	
+	end
 	
 end
 
@@ -119,21 +137,41 @@ local function Health()
 	if Health < 0 then Health = 0 elseif Health > 100 then Health = 100 end
 	local DrawHealth = math.Min(Health/GAMEMODE.Config.startinghealth, 1)
 	
-	-- Title
-	draw.DrawText("Health", "TCB_BebasNeue_1", HUD.PosX + 10 + 1, HUD.BPosY1 + 6 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-	draw.DrawText("Health", "TCB_BebasNeue_1", HUD.PosX + 10, HUD.BPosY1 + 6, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	if !HUD.EnableHunger then
 	
-	-- Background Bar
-	draw.RoundedBox(4, HUD.PosX + 60, HUD.BPosY1 + 7, HUD.BarWidth, HUD.BHeight1, Color(30,30,30,255))
+		-- Title
+		draw.DrawText("Health", "TCB_BebasNeue_1", HUD.PosX + 10 + 1, HUD.BPosY1 + 6 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.DrawText("Health", "TCB_BebasNeue_1", HUD.PosX + 10, HUD.BPosY1 + 6, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	
-	-- Bar
-	if Health != 0 then
-		draw.RoundedBox(4, HUD.PosX + 60 + 1, HUD.BPosY1 + 7 + 1, (HUD.BarWidth - 2) * DrawHealth, HUD.BHeight1 - 2, HUD.HealthColor)
+		-- Background Bar
+		draw.RoundedBox(4, HUD.PosX + 60, HUD.BPosY1 + 7, HUD.BarWidth, HUD.BHeight1, Color(30,30,30,255))
+	
+		-- Bar
+		if Health != 0 then
+			draw.RoundedBox(4, HUD.PosX + 60 + 1, HUD.BPosY1 + 7 + 1, (HUD.BarWidth - 2) * DrawHealth, HUD.BHeight1 - 2, HUD.HealthColor)
+		end
+	
+		draw.DrawText(FullHealth, "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY1 + 6 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.DrawText(FullHealth, "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY1 + 6, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	
+	else -- Hunger Enabled
+	
+		-- Title
+		draw.DrawText("Health", "TCB_BebasNeue_1", HUD.PosX + 10 + 1 - 2, HUD.BPosY1 + 6 + 1 - HUD.HO - 2, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.DrawText("Health", "TCB_BebasNeue_1", HUD.PosX + 10 - 2, HUD.BPosY1 + 6 - HUD.HO - 2, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	
+		-- Background Bar
+		draw.RoundedBox(4, HUD.PosX + 60, HUD.BPosY1 + 7 - HUD.HO - 2, HUD.BarWidth, HUD.BHeight1, Color(30,30,30,255))
+	
+		-- Bar
+		if Health != 0 then
+			draw.RoundedBox(4, HUD.PosX + 60 + 1, HUD.BPosY1 + 7 + 1 - HUD.HO - 2, (HUD.BarWidth - 2) * DrawHealth, HUD.BHeight1 - 2, HUD.HealthColor)
+		end
+	
+		draw.DrawText(FullHealth, "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY1 + 6 + 1 - HUD.HO - 2, Color(0, 0, 0, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.DrawText(FullHealth, "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY1 + 6 - HUD.HO - 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	
 	end
-	
-	draw.DrawText(FullHealth, "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY1 + 6 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	draw.DrawText(FullHealth, "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY1 + 6, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	
 end
 
 local function Armor()
@@ -143,20 +181,64 @@ local function Armor()
 	local FullArmor = LocalPlayer():Armor() or 0
 	if Armor < 0 then Armor = 0 elseif Armor > 100 then Armor = 100 end
 	
-	-- Title
-	draw.DrawText("Armor", "TCB_BebasNeue_1", HUD.PosX + 10 + 1, HUD.BPosY2 + 6 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-	draw.DrawText("Armor", "TCB_BebasNeue_1", HUD.PosX + 10, HUD.BPosY2 + 6, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	if !HUD.EnableHunger then
+		
+		-- Title
+		draw.DrawText("Armor", "TCB_BebasNeue_1", HUD.PosX + 10 + 1 - 2, HUD.BPosY2 + 6 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.DrawText("Armor", "TCB_BebasNeue_1", HUD.PosX + 10 - 2, HUD.BPosY2 + 6, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	
-	-- Background Bar
-	draw.RoundedBox(4, HUD.PosX + 60, HUD.BPosY2 + 7, HUD.BarWidth, HUD.BHeight1, Color(30,30,30,255))
+		-- Background Bar
+		draw.RoundedBox(4, HUD.PosX + 60, HUD.BPosY2 + 7, HUD.BarWidth, HUD.BHeight1, Color(30,30,30,255))
 	
-	-- Bar
-	if Armor != 0 then
-		draw.RoundedBox(4, HUD.PosX + 60 + 1, HUD.BPosY2 + 7 + 1, (HUD.BarWidth - 2) * Armor / 100, HUD.BHeight1 - 2, HUD.ArmorColor)
+		-- Bar
+		if Armor != 0 then
+			draw.RoundedBox(4, HUD.PosX + 60 + 1, HUD.BPosY2 + 7 + 1, (HUD.BarWidth - 2) * Armor / 100, HUD.BHeight1 - 2, HUD.ArmorColor)
+		end
+	
+		draw.DrawText(Armor , "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY2 + 6 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.DrawText(Armor , "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY2 + 6, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	
+	else --Hunger Enabled
+	
+		-- Title
+		draw.DrawText("Armor", "TCB_BebasNeue_1", HUD.PosX + 10 + 1 - 2, HUD.BPosY2 + 6 + 1 - HUD.HO - 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.DrawText("Armor", "TCB_BebasNeue_1", HUD.PosX + 10 - 2, HUD.BPosY2 + 6 - HUD.HO - 1, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	
+		-- Background Bar
+		draw.RoundedBox(4, HUD.PosX + 60, HUD.BPosY2 + 7 - HUD.HO - 1, HUD.BarWidth, HUD.BHeight1, Color(30,30,30,255))
+	
+		-- Bar
+		if Armor != 0 then
+			draw.RoundedBox(4, HUD.PosX + 60 + 1, HUD.BPosY2 + 7 + 1 - HUD.HO - 1, (HUD.BarWidth - 2) * Armor / 100, HUD.BHeight1 - 2, HUD.ArmorColor)
+		end
+	
+		draw.DrawText(Armor , "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY2 + 6 + 1 - HUD.HO - 1, Color(0, 0, 0, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.DrawText(Armor , "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY2 + 6 - HUD.HO - 1, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	
 	end
 	
-	draw.DrawText(Armor, "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY2 + 6 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	draw.DrawText(Armor, "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY2 + 6, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+end
+
+local function Hunger()
+	
+	-- Values
+	local Hunger = LocalPlayer():getDarkRPVar("Energy") or 0
+	if Hunger < 0 then Hunger = 0 elseif Hunger > 100 then Hunger = 100 end
+	
+	-- Title
+	draw.DrawText("Hunger", "TCB_BebasNeue_1", HUD.PosX + 10 + 1 - 2, HUD.BPosY2 + 6 + HUD.HH + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	draw.DrawText("Hunger", "TCB_BebasNeue_1", HUD.PosX + 10 - 2, HUD.BPosY2 + 6 + HUD.HH, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	
+	-- Background Bar
+	draw.RoundedBox(4, HUD.PosX + 60, HUD.BPosY2 + 7 + HUD.HH, HUD.BarWidth, HUD.BHeight1, Color(30,30,30,255))
+	
+	-- Bar
+	if Hunger != 0 then
+		draw.RoundedBox(4, HUD.PosX + 60 + 1, HUD.BPosY2 + 7 + HUD.HH + 1, (HUD.BarWidth - 2) * Hunger / 100, HUD.BHeight1 - 2, HUD.HungerColor)
+	end
+	
+	draw.DrawText(Hunger , "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY2 + 6  + HUD.HH + 1, Color(0, 0, 0, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	draw.DrawText(Hunger , "TCB_BebasNeue_1", HUD.PosX + 60 + HUD.BarWidth / 2, HUD.BPosY2 + 6 + HUD.HH, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	
 end
 
@@ -165,8 +247,8 @@ local function PlayerInfo()
 	-- Values
 	local VAL_Name 		= LocalPlayer():Nick() or ""
 	local VAL_Job 		= LocalPlayer():getDarkRPVar("job") or ""
-	local VAL_Wallet 	= "$ "..formatNumber(LocalPlayer():getDarkRPVar("money") or 0)
-	local VAL_Salary 	= "$ "..formatNumber(LocalPlayer():getDarkRPVar("salary") or 0)
+	local VAL_Wallet 	= HUD.Currency.." "..formatNumber(LocalPlayer():getDarkRPVar("money") or 0)
+	local VAL_Salary 	= HUD.Currency.." "..formatNumber(LocalPlayer():getDarkRPVar("salary") or 0)
 
 	-- Name
 	draw.DrawText("Name: ", "TCB_BebasNeue_2", HUD.PosX + 0 + 1, HUD.PosY + 18 * 2 + 2.5 * 2 + 1, Color(0,0,0,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
@@ -206,7 +288,12 @@ local function PlayerIcons()
 		surface.SetDrawColor(25,25,25,255)
 	end
 	surface.SetMaterial(Material(IconLicense))
-	surface.DrawTexturedRect( HUD.PosX + 12 + HUD.Width - 50 + 15, HUD.BPosY + 10, 20, 20)
+	
+	if !HUD.EnableHunger then
+		surface.DrawTexturedRect( HUD.PosX + 12 + HUD.Width - 50 + 15, HUD.BPosY + 10, 20, 20)
+	else -- Hunger Enabled
+		surface.DrawTexturedRect( HUD.PosX + 12 + HUD.Width - 50 + 15, HUD.BPosY + 10 - 6, 20, 20)
+	end
 	
 	if LocalPlayer():getDarkRPVar("wanted") then
 		surface.SetDrawColor(255,255,255,255)
@@ -214,7 +301,12 @@ local function PlayerIcons()
 		surface.SetDrawColor(25,25,25,255)
 	end
 	surface.SetMaterial(Material(IconWanted))
-	surface.DrawTexturedRect( HUD.PosX + 12 + HUD.Width - 50 + 15, HUD.BPosY + 35, 20, 20)
+	
+	if !HUD.EnableHunger then
+		surface.DrawTexturedRect( HUD.PosX + 12 + HUD.Width - 50 + 15, HUD.BPosY + 35, 20, 20)
+	else -- Hunger Enabled
+		surface.DrawTexturedRect( HUD.PosX + 12 + HUD.Width - 50 + 15, HUD.BPosY + 35 - 7, 20, 20)
+	end
 	
 	if LocalPlayer().DRPIsTalking then
 		surface.SetDrawColor(255,255,255,255)
@@ -222,7 +314,12 @@ local function PlayerIcons()
 		surface.SetDrawColor(25,25,25,255)
 	end
 	surface.SetMaterial(Material(IconTalking))
-	surface.DrawTexturedRect( HUD.PosX + 36 + HUD.Width - 50 + 15, HUD.BPosY + 23, 20, 20)
+	
+	if !HUD.EnableHunger then
+		surface.DrawTexturedRect( HUD.PosX + 36 + HUD.Width - 50 + 15, HUD.BPosY + 23, 20, 20)
+	else -- Hunger Enabled
+		surface.DrawTexturedRect( HUD.PosX + 12 + HUD.Width - 50 + 15, HUD.BPosY + 52, 20, 20)
+	end
 	
 end
 
@@ -313,24 +410,24 @@ local function DrawPlayerInfo(ply)
 		surface.SetMaterial(Material(IconLicense))
 		surface.SetDrawColor(255,255,255,150)
 		surface.DrawTexturedRect(pos.x - 28, pos.y - 15, 28, 28)
-		
+
 	else
 		surface.SetMaterial(Material(IconLicense))
 		surface.SetDrawColor(25,25,25,75)
 		surface.DrawTexturedRect(pos.x - 28, pos.y - 15, 28, 28) --pos.x-16 pos.y-60 32 32
-		
+
 	end
-	
+
 	if ply:getDarkRPVar("wanted") then
 		surface.SetMaterial(Material(IconWanted))
 		surface.SetDrawColor(255,255,255,150)
 		surface.DrawTexturedRect(pos.x + 8, pos.y - 15, 28, 28)
-		
+
 	else
 		surface.SetMaterial(Material(IconWanted))
 		surface.SetDrawColor(25,25,25,75)
 		surface.DrawTexturedRect(pos.x + 8, pos.y - 15, 28, 28) --pos.x-16 pos.y-60
-		
+
 	end
 
 end
@@ -411,6 +508,11 @@ local function DrawTCB()
 	Base()
 	Health()
 	Armor()
+	
+	if HUD.EnableHunger then
+		Hunger()
+	end
+	
 	PlayerInfo()
 	PlayerIcons()
 	
