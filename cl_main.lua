@@ -140,8 +140,8 @@ local function Health()
 	if !HUD.EnableHunger then
 	
 		-- Title
-		draw.DrawText("Health", "TCB_BebasNeue_1", HUD.PosX + 10 + 1, HUD.BPosY1 + 6 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw.DrawText("Health", "TCB_BebasNeue_1", HUD.PosX + 10, HUD.BPosY1 + 6, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.DrawText("Health", "TCB_BebasNeue_1", HUD.PosX + 10 + 1 - 2, HUD.BPosY1 + 6 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.DrawText("Health", "TCB_BebasNeue_1", HUD.PosX + 10 - 2, HUD.BPosY1 + 6, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	
 		-- Background Bar
 		draw.RoundedBox(4, HUD.PosX + 60, HUD.BPosY1 + 7, HUD.BarWidth, HUD.BHeight1, Color(30,30,30,255))
@@ -246,6 +246,7 @@ local function PlayerInfo()
 
 	-- Values
 	local VAL_Name 		= LocalPlayer():Nick() or ""
+	local VAL_Group     = LocalPlayer():GetNWString("usergroup")
 	local VAL_Job 		= LocalPlayer():getDarkRPVar("job") or ""
 	local VAL_Wallet 	= HUD.Currency.." "..formatNumber(LocalPlayer():getDarkRPVar("money") or 0)
 	local VAL_Salary 	= HUD.Currency.." "..formatNumber(LocalPlayer():getDarkRPVar("salary") or 0)
@@ -253,8 +254,14 @@ local function PlayerInfo()
 	-- Name
 	draw.DrawText("Name: ", "TCB_BebasNeue_2", HUD.PosX + 0 + 1, HUD.PosY + 18 * 2 + 2.5 * 2 + 1, Color(0,0,0,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	draw.DrawText("Name: ", "TCB_BebasNeue_1", HUD.PosX + 0, HUD.PosY + 18 * 2 + 2.5 * 2, Color(192, 57, 43, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-	draw.DrawText(VAL_Name, "TCB_BebasNeue_1", HUD.PosX + 55 + 1, HUD.PosY + 18 * 2 + 2.5 * 1 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-	draw.DrawText(VAL_Name, "TCB_BebasNeue_1", HUD.PosX + 55, HUD.PosY + 18 * 2 + 2.5 * 1, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	draw.DrawText(VAL_Name, "TCB_BebasNeue_1", HUD.PosX + 55 + 1, HUD.PosY + 18 * 2 + 2.5 * 2 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	draw.DrawText(VAL_Name, "TCB_BebasNeue_1", HUD.PosX + 55, HUD.PosY + 18 * 2 + 2.5 * 2, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	
+	-- Rank
+	draw.DrawText("Rank: ", "TCB_BebasNeue_1", HUD.PosX + 0 + 1, HUD.PosY + 18 * 1 + 2.5 * 2 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	draw.DrawText("Rank: ", "TCB_BebasNeue_1", HUD.PosX + 0, HUD.PosY + 18 * 1 + 2.5 * 2, Color(192, 57, 43, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	draw.DrawText(VAL_Group, "TCB_BebasNeue_1", HUD.PosX + 55 + 1, HUD.PosY + 18 * 1 + 2.5 * 2 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	draw.DrawText(VAL_Group, "TCB_BebasNeue_1", HUD.PosX + 55, HUD.PosY + 18 * 1 + 2.5 * 2, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	
 	-- Job
 	draw.DrawText("Job: ", "TCB_BebasNeue_1", HUD.PosX + 0 + 1, HUD.PosY + 18 * 3 + 2.5 * 2 + 1, Color(0, 0, 0, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
